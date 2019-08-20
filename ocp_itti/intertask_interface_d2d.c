@@ -81,10 +81,8 @@ task_list_t tasks[TASK_MAX];
     temp->ittiMsgHeader.ittiMsgSize = size;
     temp->previous = NULL; 
     temp->next = NULL;
-    printf("transmit message id = %d,message_size = %d\n", message_id,temp->ittiMsgHeader.ittiMsgSize);
-    temp->message_ptr = calloc(1,message_size); 
-    memcpy((void *)temp->message_ptr,(void *)message_ptr, message_size); 
-    free(message_ptr);
+	temp->message_ptr = message_ptr;
+
     return temp;
     //return itti_alloc_new_message_sized(origin_task_id, message_id, messages_info[message_id].size);
   }
@@ -291,6 +289,11 @@ task_list_t tasks[TASK_MAX];
     return 0;
   }
 
+
+  void itti_free_message(MessageDef *received_msg)
+  {
+	  free(received_msg->message_ptr);
+  }
 
 #if 0
   void itti_poll_msg(task_id_t task_id, MessageDef **received_msg) {

@@ -535,7 +535,7 @@ void itti_poll_msg(task_id_t task_id, MessageDef **received_msg);
 int itti_create_task(task_id_t task_id,
                      void *(*start_routine) (void *),
                      void *args_p);
-
+void itti_free_message(MessageDef *received_msg);
 /** \brief Exit the current task.
  **/
 void itti_exit_task(void);
@@ -558,6 +558,8 @@ const char *itti_get_message_name(MessagesIds message_id);
    \param thread_id Id of the task
  **/
 const char *itti_get_task_name(task_id_t task_id);
+
+
 
 /** \brief Alloc and memset(0) a new itti message.
    \param origin_task_id Task ID of the sending task

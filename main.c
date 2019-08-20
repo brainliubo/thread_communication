@@ -13,15 +13,15 @@ void * dummy_func(void *args)
 
     for (index = 0; index < 10; index ++)
     {
-   	//！消息队列锁
 
-      rpt_ptr = calloc(1,sizeof(rlc_rrc_buffer_rpt) ); 
-      rpt_ptr->request_id = 10 + index; 
+   	  //！消息队列锁
+      rpt_ptr = calloc(1,sizeof(rlc_rrc_buffer_rpt)); 
+      rpt_ptr->request_id =  index; 
       rpt_ptr->rlc_buffer_data_size = 256; 
       rpt_ptr->rlc_buffer_valid = 1; 
 
-      message = itti_alloc_new_message(TASK_D2D_DUMMY, 1000 + index, (char *)rpt_ptr, sizeof(rlc_rrc_buffer_rpt));
-     //!alloc msg 
+      message = itti_alloc_new_message(TASK_D2D_DUMMY,  index, (char *)rpt_ptr, sizeof(rlc_rrc_buffer_rpt));
+      //!alloc msg 
     
 	  itti_send_msg_to_task(TASK_D2D_RRC, 0, message);
 	}
@@ -40,9 +40,10 @@ void *rrc_process_func(void * arg)
     char *msg_content_ptr;
     uint32_t requstid;
 
+    
     while (1)
     {
-       
+        
 		if (0 == itti_receive_msg(TASK_D2D_RRC, &recv_msg))
 		{
 			switch (recv_msg->ittiMsgHeader.originTaskId)
@@ -60,7 +61,7 @@ void *rrc_process_func(void * arg)
 					//printf("requset_id = %d\n",requstid);
 					//!process message 
 
-					free(recv_msg->message_ptr);
+					itti_free_message(recv_msg);
 
 					printf("process received message success! \n\n\n");
 					break;
@@ -79,13 +80,17 @@ void *rrc_process_func(void * arg)
 int main()
 {
 
+     
 	itti_init(3, &tasks_info);
 	
-	
-	itti_create_task(TASK_D2D_DUMMY, dummy_func, NULL);
 
+	itti_create_task(TASK_D2D_DUMMY, dummy_func, NULL);
 	itti_create_task(TASK_D2D_RRC, rrc_process_func, NULL);
+
+	
 
     sleep(10);
 	return 0;
 }
+
+
