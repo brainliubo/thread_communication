@@ -30,16 +30,16 @@
 #define LIST_C
 #define NULL 0
 
-#include "list.h"
+#include "message_list.h"
 #include <string.h>
+#include <intertask_interface.h>
 
 //-----------------------------------------------------------------------------
 /*
  * initialize list
  */
 //-----------------------------------------------------------------------------
-void
-list_init (list_t * listP, char *nameP)
+void message_list_init (message_list_t * listP, char *nameP)
 {
   //-----------------------------------------------------------------------------
   if (nameP) {
@@ -51,37 +51,21 @@ list_init (list_t * listP, char *nameP)
   listP->head = NULL;
   listP->nb_elements = 0;
 }
-//-----------------------------------------------------------------------------
-void
-list_free (list_t * listP)
-{
-  //-----------------------------------------------------------------------------
-  mem_block_t      *le;
-   //！将全部节点都释放
-  while ((le = list_remove_head (listP))) {
-    free_mem_block (le, __func__);
-  }
-}
-//-----------------------------------------------------------------------------
-mem_block_t *
-list_get_head (list_t * listP)
-{
-  //-----------------------------------------------------------------------------
-  return listP->head;
-}
+
+
+
 //-----------------------------------------------------------------------------
 /*
  *  remove an element from head of a list
  *  @param  pointer on targeted list
- *  @return pointer on removed mem_block_t
+ *  @return pointer on removed MessageDef
  */
-mem_block_t *
-list_remove_head (list_t * listP)
+MessageDef *message_list_remove_head (message_list_t *listP)
 {
   //-----------------------------------------------------------------------------
 
   // access optimisation
-  mem_block_t      *head;
+  MessageDef      *head;
   head = listP->head;
 
   // almost one element
@@ -102,14 +86,32 @@ list_remove_head (list_t * listP)
   return head;
 }
 
+
+
 //-----------------------------------------------------------------------------
-mem_block_t *
-list_remove_element (mem_block_t * elementP, list_t * listP)
+void  message_list_free (message_list_t *listP)
+{
+  //-----------------------------------------------------------------------------
+  MessageDef      *le;
+   //！将全部节点都释放
+  while ((le = message_list_remove_head (listP))) {
+    message_free_mem_block (le, __func__);
+  }
+}
+//-----------------------------------------------------------------------------
+MessageDef * message_list_get_head (message_list_t *listP)
+{
+  //-----------------------------------------------------------------------------
+  return listP->head;
+}
+
+//-----------------------------------------------------------------------------
+MessageDef *  message_list_remove_element (MessageDef * elementP, message_list_t *listP)
 {
   //-----------------------------------------------------------------------------
 
   // access optimisation;
-  mem_block_t      *head;
+  MessageDef      *head;
 
   if (elementP != NULL) {
     // test head
@@ -153,15 +155,14 @@ list_remove_element (mem_block_t * elementP, list_t * listP)
 /*
  *  add an element to the beginning of a list
  *  @param  pointer on targeted list
- *  @return pointer on removed mem_block_t
+ *  @return pointer on removed MessageDef
  */
-void
-list_add_head (mem_block_t * elementP, list_t * listP)
+void   message_list_add_head (MessageDef * elementP, message_list_t *listP)
 {
   //-----------------------------------------------------------------------------
 
   // access optimisation;
-  mem_block_t      *head;
+  MessageDef      *head;
 
   if (elementP != NULL) {
     head = listP->head;
@@ -182,12 +183,11 @@ list_add_head (mem_block_t * elementP, list_t * listP)
 /*
  *  add an element to the end of a list
  *  @param  pointer on targeted list
- *  @return pointer on removed mem_block_t
+ *  @return pointer on removed MessageDef
  */
-void
-list_add_tail_eurecom (mem_block_t * elementP, list_t * listP)
+void   message_list_add_tail_eurecom (MessageDef * elementP, message_list_t *listP)
 {
-  mem_block_t      *tail;
+  MessageDef      *tail;
   //-----------------------------------------------------------------------------
 
   if (elementP != NULL) {
@@ -210,15 +210,14 @@ list_add_tail_eurecom (mem_block_t * elementP, list_t * listP)
 }
 
 //-----------------------------------------------------------------------------
-void
-list_add_list (list_t * sublistP, list_t * listP)
+void  message_list_add_list (message_list_t *sublistP, message_list_t *listP)
 {
   //-----------------------------------------------------------------------------
 
   if (sublistP) {
     if (sublistP->head) {  //！如果子LIST . 
       // access optimisation
-      mem_block_t      *tail;
+      MessageDef      *tail;
 
       tail = listP->tail;
 
@@ -240,12 +239,11 @@ list_add_list (list_t * sublistP, list_t * listP)
 }
 
 //-----------------------------------------------------------------------------
-void
-list_display (list_t * listP)
+void  message_list_display (message_list_t *listP)
 {
   //-----------------------------------------------------------------------------
 
-  mem_block_t      *cursor;
+  MessageDef      *cursor;
   //  unsigned short             nb_elements = 0;
 
   // test lists
@@ -267,6 +265,7 @@ list_display (list_t * listP)
     //msg ("[SDU_MNGT][WARNING] display_cnt_list() : list is NULL\n");
   }
 }
+#if 0
 #ifndef LINUX_LIST
 /*! \fn void push_front(struct list* z, double val)
 * \brief this function pushes front new values in a predefined list.
@@ -274,8 +273,7 @@ list_display (list_t * listP)
 *       val is the new value to be pushed inside the list
 * \return
 */
-void
-push_front(struct list* z, double val)
+void   message_push_front(struct list* z, double val)
 {
 
   struct node* p = (struct node*) malloc(sizeof(struct node));
@@ -295,8 +293,7 @@ push_front(struct list* z, double val)
 * \param z is the list
 * \return
 */
-void
-initialize(struct list* z)
+void   message_initialize(struct list* z)
 {
   z->head = NULL;
   z->size = 0;
@@ -309,8 +306,7 @@ initialize(struct list* z)
 * \param z is the list
 * \return
 */
-void
-del(struct list* z)
+void  message_del(struct list* z)
 {
   struct node* cur;
   struct node* x = z->head;
@@ -333,8 +329,7 @@ del(struct list* z)
 *        v is the list to be converted
 * \return
 */
-void
-totable(double* table, struct list* v)
+void  message_totable(double* table, struct list* v)
 {
   int i = 0;
 
@@ -444,3 +439,5 @@ int32_t calculate_median(struct list *loc_list)
 
   return median;
 }
+
+#endif 

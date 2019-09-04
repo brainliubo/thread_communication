@@ -17,6 +17,7 @@ void * dummy_func(void *args)
 
    	  //！消息队列锁
       rpt_ptr = calloc(1,sizeof(rlc_rrc_buffer_rpt)); 
+      LOG_DEBUG(DRIVER,"allocate new message, memory_ptr = %ld\n",rpt_ptr);
       rpt_ptr->request_id =  index; 
       rpt_ptr->rlc_buffer_data_size = 256; 
       rpt_ptr->rlc_buffer_valid = 1; 
@@ -81,7 +82,7 @@ int main()
 {
 
      
-	itti_init(3, &tasks_info);
+	itti_init(6, &tasks_info);
 	
 
 	itti_create_task(TASK_D2D_DUMMY, dummy_func, NULL);
